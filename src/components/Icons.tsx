@@ -12,6 +12,11 @@ const PATHS = {
   bulb: 'M9 18h6 M10 21h4 M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z',
   check: 'M5 12l5 5 9-10',
   chevron: 'M9 6l6 6-6 6',
+  dumbbell: 'M6 7v10 M3 9.5v5 M18 7v10 M21 9.5v5 M6 12h12',
+  sparkle: 'M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z',
+  people: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5 M16 6.5a2.5 2.5 0 0 1 0 5 M17 15c2.5.3 4 1.8 4 5',
+  bolt: 'M13 3L5 14h6l-1 7 8-11h-6z',
+  goal: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M12 12h.01',
 } as const
 
 export type IconName = keyof typeof PATHS
