@@ -9,6 +9,7 @@ export interface AppState {
   xp: number
   badges: string[]
   moodLog: Record<string, string>
+  name: string
 }
 
 export const CATS: { id: CatId; label: string; emoji: string; color: string }[] = [
@@ -29,7 +30,7 @@ const KEY = 'evolveAppData'
 export const dayKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
 export const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
 
-const empty = (): AppState => ({ tasks: [], completions: {}, xp: 0, badges: [], moodLog: {} })
+const empty = (): AppState => ({ tasks: [], completions: {}, xp: 0, badges: [], moodLog: {}, name: '' })
 
 export function loadState(): AppState {
   try {
@@ -48,6 +49,7 @@ export function loadState(): AppState {
       xp: Number(p.xp) || 0,
       badges: Array.isArray(p.badges) ? p.badges : [],
       moodLog: p.moodLog && typeof p.moodLog === 'object' ? p.moodLog : {},
+      name: typeof p.name === 'string' ? p.name.slice(0, 40) : '',
     }
   } catch { return empty() }
 }
@@ -74,4 +76,48 @@ export function levelInfo(xp: number) {
   const last = i === LEVELS.length - 1
   const pct = last ? 100 : Math.round((xp - LEVELS[i].min) / (LEVELS[i + 1].min - LEVELS[i].min) * 100)
   return { level: i + 1, ...LEVELS[i], pct, toNext: last ? 0 : LEVELS[i + 1].min - xp }
+}
+
+// ---- Home screen helpers ----
+export const PRIORITY_RANK: Record<Priority, number> = { high: 0, medium: 1, low: 2 }
+
+const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
+
+// Monday-first week containing `now`, one entry per day.
+export function weekDots(s: AppState, now = new Date()) {
+  const today = startOfDay(now)
+  const monday = addDays(now, -((now.getDay() + 6) % 7))
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = addDays(monday, i)
+    const future = d.getTime() > today
+    return {
+      label: 'MTWTFSS'[i],
+      pct: future ? 0 : dayPct(s, d),
+      hasTasks: tasksOn(s, d).length > 0,
+      isToday: d.getTime() === today,
+      future,
+    }
+  })
+}
+
+// Average completion over `days` days ending at `end`, skipping days that had no tasks.
+function avgPct(s: AppState, end: Date, days: number) {
+  let sum = 0, n = 0
+  for (let i = 0; i < days; i++) {
+    const d = addDays(end, -i)
+    if (tasksOn(s, d).length) { sum += dayPct(s, d); n++ }
+  }
+  return n ? sum / n : null
+}
+
+// Windows end yesterday, so a half-finished today doesn't drag the numbers down.
+export function insight(s: AppState, now = new Date()) {
+  const yesterday = addDays(now, -1)
+  const cur = avgPct(s, yesterday, 7), prev = avgPct(s, addDays(yesterday, -7), 7)
+  if (cur === null) return 'Finish a full day of tasks and your first insight shows up here.'
+  if (prev === null) return `You averaged ${Math.round(cur)}% completion over the last 7 days. Keep going.`
+  const diff = Math.round(cur - prev)
+  if (diff > 0) return `You're ${diff} points more consistent than the week before. Keep it up!`
+  if (diff < 0) return `Completion is ${-diff} points below the week before. One good day turns it around.`
+  return `You're holding steady at ${Math.round(cur)}% completion, same as the week before.`
 }
