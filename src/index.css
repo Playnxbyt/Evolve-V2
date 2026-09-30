@@ -1,19 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #061016;
-  --color-panel: #0b171e;
-  --color-line: #1a2a32;
+  --color-bg: #060c12;
+  --color-panel: #0a141b;
+  --color-line: #15242c;
   --color-ink: #edf7f8;
-  --color-muted: #82969e;
+  --color-muted: #7d929b;
   --color-teal: #64e8d3;
   --color-blue: #57b9f5;
+  --color-mint: #3ddc97;
   --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+@layer components {
+  .card {
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(14, 27, 35, 0.92), rgba(9, 19, 26, 0.92));
+    box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
 }
 
 body {
   @apply bg-bg font-sans text-ink antialiased;
-  background-image: radial-gradient(ellipse at top right, rgba(100, 232, 211, 0.06), transparent 55%);
+  background-image:
+    radial-gradient(ellipse at top right, rgba(100, 232, 211, 0.07), transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(87, 185, 245, 0.05), transparent 45%);
   background-attachment: fixed;
 }
 button:not(:disabled) { cursor: pointer; }
