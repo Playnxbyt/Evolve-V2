@@ -11,5 +11,10 @@
   --font-sans: "DM Sans", system-ui, sans-serif;
 }
 
-body { @apply bg-bg font-sans text-ink antialiased; }
+body {
+  @apply bg-bg font-sans text-ink antialiased;
+  background-image: radial-gradient(ellipse at top right, rgba(100, 232, 211, 0.06), transparent 55%);
+  background-attachment: fixed;
+}
+button:not(:disabled) { cursor: pointer; }
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--color-teal); outline-offset: 2px; }
